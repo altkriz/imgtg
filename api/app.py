@@ -33,17 +33,12 @@ def index():
     msg = request.get_json()
     chat_id = msg["message"]["chat"]["id"]
     inputText = msg["message"]["text"]
-    
     if inputText == "/start":
         sendMessage(chat_id, "Ya, I am Online. Send me a Prompt")
     else:
-        BASE_URL = f"https://lexica.art/api/v1/search?q={inputText}"
+        BASE_URL = "https://lexica.art/api/v1/search?q=" + str(inputText)
         response = requests.get(BASE_URL)
-        response_text = response.json()
-        allImages = response_text.get("images", [])
-        if allImages:
-            sendMediaGroup(chat_id, allImages)
-        else:
-            sendMessage(chat_id, "No images found.")
-    
+        response_text = json.loads(response.text)
+        allImages = response_text["images"]
+        sendMediaGroup(chat_id, allImages)
     return Response("ok", status=200)
